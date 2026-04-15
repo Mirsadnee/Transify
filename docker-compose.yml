@@ -1,0 +1,15 @@
+services:
+  translator-api:
+    build: .
+    container_name: universal-translator-ml
+    ports:
+      - "8000:8000"
+    environment:
+      TRANSLATION_PROVIDER: ${TRANSLATION_PROVIDER:-local_nllb}
+      TRANSLATION_MODEL_NAME: ${TRANSLATION_MODEL_NAME:-facebook/nllb-200-distilled-600M}
+      TRANSLATION_MODEL_DEVICE: ${TRANSLATION_MODEL_DEVICE:-auto}
+      APP_API_KEY: ${APP_API_KEY:-}
+      CACHE_DB_PATH: /app/data/translation_cache.sqlite3
+    volumes:
+      - ./data:/app/data
+      - ./hf-cache:/app/.cache/huggingface

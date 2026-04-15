@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Universal Translator Demo</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; line-height: 1.5; }
+    textarea, input, select { width: 100%; padding: 10px; margin: 8px 0 16px; }
+    button { padding: 10px 16px; cursor: pointer; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    pre { background: #f5f5f5; padding: 12px; overflow: auto; }
+  </style>
+</head>
+<body>
+  <h1>Universal Translator Demo</h1>
+
+  <label>API Base URL</label>
+  <input id="apiBase" value="http://127.0.0.1:8000" />
+
+  <div class="grid">
+    <div>
+      <h2>Text Translation</h2>
+      <label>Source language</label>
+      <input id="textSource" value="sq" />
+      <label>Target language</label>
+      <input id="textTarget" value="en" />
+      <label>Text</label>
+      <textarea id="textInput" rows="6">Mirë se vini në faqen time. Kjo është një demo.</textarea>
+      <button id="translateTextBtn">Translate text</button>
+      <h3>Result</h3>
+      <pre id="textResult"></pre>
+    </div>
+
+    <div>
+      <h2>HTML Translation</h2>
+      <label>Source language</label>
+      <input id="htmlSource" value="sq" />
+      <label>Target language</label>
+      <input id="htmlTarget" value="en" />
+      <label>HTML</label>
+      <textarea id="htmlInput" rows="10">&lt;h1&gt;Mirë se vini&lt;/h1&gt;
+&lt;p&gt;Kjo është faqja ime.&lt;/p&gt;
+&lt;div translate="no"&gt;BrandName&lt;/div&gt;</textarea>
+      <button id="translateHtmlBtn">Translate HTML</button>
+      <h3>Result</h3>
+      <pre id="htmlResult"></pre>
+    </div>
+  </div>
+
+  <script>
+    async function postJson(path, payload) {
+      const apiBase = document.getElementById('apiBase').value.replace(/\/$/, '');
+      const res = await fetch(`${apiBase}${path}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      return { ok: res.ok, data };
+    }
+
+    document.getElementById('translateTextBtn').addEventListener('click', async () => {
+      const payload = {
+        text: document.getElementById('textInput').value,
+        source_lang: document.getElementById('textSource').value,
+        target_lang: document.getElementById('textTarget').value
+      };
+      const result = await postJson('/translate', payload);
+      document.getElementById('textResult').textContent = JSON.stringify(result.data, null, 2);
+    });
+
+    document.getElementById('translateHtmlBtn').addEventListener('click', async () => {
+      const payload = {
+        html: document.getElementById('htmlInput').value,
+        source_lang: document.getElementById('htmlSource').value,
+        target_lang: document.getElementById('htmlTarget').value
+      };
+      const result = await postJson('/translate-html', payload);
+      document.getElementById('htmlResult').textContent = JSON.stringify(result.data, null, 2);
+    });
+  </script>
+</body>
+</html>
