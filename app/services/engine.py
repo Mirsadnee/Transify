@@ -50,7 +50,14 @@ class TranslationEngine:
         if settings.provider == "deep_translator":
             return DeepTranslatorProvider()
         if settings.provider == "local_nllb":
-            return LocalNLLBProvider(settings)
+            # Auto-fallback to deep_translator if heavy dependencies are missing (e.g., on free hosting)
+            try:
+                import torch  # noqa: F401
+                from transformers import AutoModelForSeq2SeqLM  # noqa: F401
+                return LocalNLLBProvider(settings)
+            except ImportError:
+                # Heavy dependencies not available; gracefully fall back to web translator
+                return DeepTranslatorProvider()
         raise ValueError(f"Unsupported provider: {settings.provider}")
 
     def _validate_languages(self, source_lang: str, target_lang: str) -> tuple[str, str]:
