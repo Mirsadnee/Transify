@@ -1,13 +1,14 @@
 # Universal Translator ML API
 
-Production-oriented starter API for machine translation with FastAPI + local Hugging Face models.
+Production-oriented starter API for machine translation with FastAPI.
 
 Integrates easily from PHP, JavaScript, Python, Java, C#, or any client that can call HTTP endpoints.
 
 ## Features
 
 - FastAPI backend with OpenAPI docs (`/docs`)
-- Local ML translation provider (Transformers + NLLB)
+- Lightweight web translator provider by default (`deep-translator`)
+- Optional local ML provider (Transformers + NLLB)
 - Text and HTML translation endpoints
 - SQLite cache for repeated translations
 - Optional API key authentication (`X-API-Key`)
@@ -26,8 +27,8 @@ Website / App / CMS / PHP / JS / Python
         +-------+--------+
         |                |
         v                v
-   Translation Cache   ML Provider
-      (SQLite)         (Local NLLB)
+  Translation Cache   Translation Provider
+    (SQLite)         (Web or Local NLLB)
 ```
 
 ## API Endpoints
@@ -66,8 +67,8 @@ Response example:
 
 ```json
 {
-  "provider": "local_nllb",
-  "model_name": "facebook/nllb-200-distilled-600M",
+  "provider": "deep_translator",
+  "model_name": "google-web",
   "source_lang": "sq",
   "target_lang": "en",
   "translated": "Welcome to my website",
@@ -130,6 +131,12 @@ TRANSLATION_PROVIDER=local_nllb
 TRANSLATION_MODEL_NAME=facebook/nllb-200-distilled-600M
 ```
 
+Free-memory default:
+
+```env
+TRANSLATION_PROVIDER=deep_translator
+```
+
 Optional API key protection:
 
 ```env
@@ -142,9 +149,22 @@ Send API key as request header:
 X-API-Key: super-secret-key
 ```
 
-## First-Run Note
+## Provider Modes
 
-At first startup, the NLLB model is downloaded from Hugging Face. This may take time and disk space depending on your server resources.
+- `deep_translator` (default): lightweight and suitable for low-memory hosting.
+- `local_nllb`: higher quality local model, but requires heavier dependencies/resources.
+
+For `local_nllb`, the first startup downloads the NLLB model from Hugging Face, which can take time and disk space.
+
+## Render Free Plan Tips
+
+For 512MB plans, use:
+
+```env
+TRANSLATION_PROVIDER=deep_translator
+```
+
+If you deploy using Docker (this repo includes a Dockerfile), you do not need a custom start command.
 
 ## HTML Translation Rules
 
@@ -214,4 +234,3 @@ tests/
 - This is a production-oriented starter, not a complete SaaS product.
 - Review the license of any ML model before commercial deployment.
 - Use caching aggressively for better performance at scale.
-#

@@ -11,7 +11,7 @@ class Settings(BaseModel):
     app_version: str = "0.1.0"
     app_api_key: str | None = None
 
-    provider: str = Field(default="local_nllb")
+    provider: str = Field(default="deep_translator")
     model_name: str = Field(default="facebook/nllb-200-distilled-600M")
     model_device: str = Field(default="cpu")
     default_source_lang: str = Field(default="auto")
@@ -37,7 +37,7 @@ class Settings(BaseModel):
     def from_env(cls) -> "Settings":
         return cls(
             app_api_key=os.getenv("APP_API_KEY") or None,
-            provider=os.getenv("TRANSLATION_PROVIDER", "local_nllb").strip().lower(),
+            provider=os.getenv("TRANSLATION_PROVIDER", "deep_translator").strip().lower(),
             model_name=os.getenv("TRANSLATION_MODEL_NAME", "facebook/nllb-200-distilled-600M"),
             model_device=os.getenv("TRANSLATION_MODEL_DEVICE", "cpu"),
             default_source_lang=os.getenv("DEFAULT_SOURCE_LANG", "auto"),

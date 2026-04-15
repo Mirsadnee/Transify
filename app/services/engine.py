@@ -6,7 +6,7 @@ from functools import lru_cache
 from app.config import Settings, get_settings
 from app.language_map import get_language, normalize_language_code
 from app.services.cache import TranslationCache
-from app.services.providers import DummyProvider, LocalNLLBProvider, TranslationProvider
+from app.services.providers import DeepTranslatorProvider, DummyProvider, LocalNLLBProvider, TranslationProvider
 from app.utils.html import extract_translatable_segments
 from app.utils.language import detect_language
 from app.utils.text import is_blank, is_probably_non_linguistic, total_characters
@@ -47,6 +47,8 @@ class TranslationEngine:
     def _build_provider(settings: Settings) -> TranslationProvider:
         if settings.provider == "dummy":
             return DummyProvider()
+        if settings.provider == "deep_translator":
+            return DeepTranslatorProvider()
         if settings.provider == "local_nllb":
             return LocalNLLBProvider(settings)
         raise ValueError(f"Unsupported provider: {settings.provider}")
