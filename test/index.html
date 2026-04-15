@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transify API Test</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #0b1220;
+      --panel: #111a2d;
+      --panel-2: #16213a;
+      --text: #e8eefc;
+      --muted: #98a6c7;
+      --accent: #61dafb;
+      --accent-2: #7c8cff;
+      --border: rgba(255, 255, 255, 0.12);
+      --good: #44d19d;
+      --bad: #ff6b8b;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(97, 218, 251, 0.14), transparent 28%),
+        radial-gradient(circle at top right, rgba(124, 140, 255, 0.12), transparent 24%),
+        linear-gradient(180deg, #09101c 0%, #0b1220 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 32px 16px 48px;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      letter-spacing: -0.04em;
+    }
+
+    .hero p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      max-width: 720px;
+      line-height: 1.6;
+    }
+
+    .badge {
+      align-self: flex-start;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      grid-column: span 12;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(12px);
+    }
+
+    @media (min-width: 900px) {
+      .card.half { grid-column: span 6; }
+    }
+
+    label {
+      display: block;
+      margin: 14px 0 8px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(8, 13, 24, 0.9);
+      color: var(--text);
+      font: inherit;
+    }
+
+    input, textarea {
+      padding: 12px 14px;
+    }
+
+    textarea { min-height: 150px; resize: vertical; }
+
+    button {
+      margin-top: 14px;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #04101c;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+
+    button:hover { transform: translateY(-1px); filter: brightness(1.03); }
+    button:active { transform: translateY(0); }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .actions button {
+      width: auto;
+      min-width: 140px;
+      margin-top: 0;
+    }
+
+    pre {
+      margin: 16px 0 0;
+      padding: 16px;
+      border-radius: 16px;
+      background: #09101c;
+      border: 1px solid var(--border);
+      overflow: auto;
+      min-height: 100px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .status.good { color: var(--good); }
+    .status.bad { color: var(--bad); }
+
+    .hint {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+      margin-top: 10px;
+    }
+
+    code {
+      background: rgba(255, 255, 255, 0.06);
+      padding: 0.15rem 0.35rem;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <h1>Transify API Test</h1>
+        <p>
+          Kjo faqe e thjeshtë teston publikimin tënd online. Provo <code>/health</code>,
+          <code>/languages</code>, dhe përkthimin direkt nga browser-i.
+        </p>
+      </div>
+      <div class="badge">Default URL: https://transify-0r2a.onrender.com</div>
+    </div>
+
+    <div class="grid">
+      <section class="card half">
+        <h2>Connection Test</h2>
+        <label for="apiBase">API Base URL</label>
+        <input id="apiBase" value="https://transify-0r2a.onrender.com" />
+
+        <div class="actions">
+          <button id="healthBtn">Check /health</button>
+          <button id="languagesBtn">Load /languages</button>
+        </div>
+
+        <div id="connectionStatus" class="status">Ready to test.</div>
+        <pre id="connectionOutput">Kliko njërën nga butonat sipër.</pre>
+      </section>
+
+      <section class="card half">
+        <h2>Text Translate</h2>
+        <div class="row">
+          <div>
+            <label for="sourceLang">Source language</label>
+            <input id="sourceLang" value="sq" />
+          </div>
+          <div>
+            <label for="targetLang">Target language</label>
+            <input id="targetLang" value="en" />
+          </div>
+        </div>
+
+        <label for="textInput">Text</label>
+        <textarea id="textInput">Mirë se vini në faqen time. Kjo është një test i publikimit.</textarea>
+
+        <div class="actions">
+          <button id="translateBtn">Translate text</button>
+        </div>
+
+        <div id="translateStatus" class="status">Ready to translate.</div>
+        <pre id="translateOutput">Rezultati do të shfaqet këtu.</pre>
+      </section>
+
+      <section class="card">
+        <h2>HTML Translate</h2>
+        <div class="row">
+          <div>
+            <label for="htmlSource">Source language</label>
+            <input id="htmlSource" value="sq" />
+          </div>
+          <div>
+            <label for="htmlTarget">Target language</label>
+            <input id="htmlTarget" value="en" />
+          </div>
+        </div>
+
+        <label for="htmlInput">HTML</label>
+        <textarea id="htmlInput">&lt;h1&gt;Mirë se vini&lt;/h1&gt;
+&lt;p&gt;Kjo është faqja ime.&lt;/p&gt;
+&lt;div translate="no"&gt;BrandName&lt;/div&gt;</textarea>
+
+        <div class="actions">
+          <button id="translateHtmlBtn">Translate HTML</button>
+        </div>
+
+        <div id="htmlStatus" class="status">Ready to translate HTML.</div>
+        <pre id="htmlOutput">Rezultati do të shfaqet këtu.</pre>
+      </section>
+
+      <section class="card">
+        <h2>Optional API Key</h2>
+        <p class="hint">
+          Nëse ke aktivizuar <code>APP_API_KEY</code> në Render, vendose këtu që testet të kalojnë.
+          Nëse nuk ke vendosur API key, lëre bosh.
+        </p>
+
+        <label for="apiKey">API Key</label>
+        <input id="apiKey" placeholder="Optional" />
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const apiBaseInput = document.getElementById('apiBase');
+    const apiKeyInput = document.getElementById('apiKey');
+
+    function setStatus(element, message, state) {
+      element.textContent = message;
+      element.className = `status ${state || ''}`.trim();
+    }
+
+    async function requestJson(path, payload, method = 'POST') {
+      const apiBase = apiBaseInput.value.trim().replace(/\/$/, '');
+      const headers = { 'Content-Type': 'application/json' };
+      const apiKey = apiKeyInput.value.trim();
+      if (apiKey) {
+        headers['X-API-Key'] = apiKey;
+      }
+
+      const response = await fetch(`${apiBase}${path}`, {
+        method,
+        headers,
+        body: method === 'GET' ? undefined : JSON.stringify(payload)
+      });
+
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = text;
+      }
+
+      return { ok: response.ok, status: response.status, data };
+    }
+
+    document.getElementById('healthBtn').addEventListener('click', async () => {
+      const statusEl = document.getElementById('connectionStatus');
+      const outputEl = document.getElementById('connectionOutput');
+      setStatus(statusEl, 'Testing /health...', '');
+
+      try {
+        const result = await requestJson('/health', null, 'GET');
+        outputEl.textContent = JSON.stringify(result.data, null, 2);
+        setStatus(statusEl, `Health check ${result.ok ? 'passed' : 'failed'} (${result.status})`, result.ok ? 'good' : 'bad');
+      } catch (error) {
+        outputEl.textContent = String(error);
+        setStatus(statusEl, 'Health check failed.', 'bad');
+      }
+    });
+
+    document.getElementById('languagesBtn').addEventListener('click', async () => {
+      const statusEl = document.getElementById('connectionStatus');
+      const outputEl = document.getElementById('connectionOutput');
+      setStatus(statusEl, 'Loading /languages...', '');
+
+      try {
+        const result = await requestJson('/languages', null, 'GET');
+        outputEl.textContent = JSON.stringify(result.data, null, 2);
+        setStatus(statusEl, `Languages loaded ${result.ok ? 'successfully' : 'with errors'} (${result.status})`, result.ok ? 'good' : 'bad');
+      } catch (error) {
+        outputEl.textContent = String(error);
+        setStatus(statusEl, 'Languages request failed.', 'bad');
+      }
+    });
+
+    document.getElementById('translateBtn').addEventListener('click', async () => {
+      const statusEl = document.getElementById('translateStatus');
+      const outputEl = document.getElementById('translateOutput');
+      setStatus(statusEl, 'Translating text...', '');
+
+      try {
+        const result = await requestJson('/translate', {
+          text: document.getElementById('textInput').value,
+          source_lang: document.getElementById('sourceLang').value,
+          target_lang: document.getElementById('targetLang').value,
+        });
+        outputEl.textContent = JSON.stringify(result.data, null, 2);
+        setStatus(statusEl, `Text translation ${result.ok ? 'passed' : 'failed'} (${result.status})`, result.ok ? 'good' : 'bad');
+      } catch (error) {
+        outputEl.textContent = String(error);
+        setStatus(statusEl, 'Text translation failed.', 'bad');
+      }
+    });
+
+    document.getElementById('translateHtmlBtn').addEventListener('click', async () => {
+      const statusEl = document.getElementById('htmlStatus');
+      const outputEl = document.getElementById('htmlOutput');
+      setStatus(statusEl, 'Translating HTML...', '');
+
+      try {
+        const result = await requestJson('/translate-html', {
+          html: document.getElementById('htmlInput').value,
+          source_lang: document.getElementById('htmlSource').value,
+          target_lang: document.getElementById('htmlTarget').value,
+        });
+        outputEl.textContent = JSON.stringify(result.data, null, 2);
+        setStatus(statusEl, `HTML translation ${result.ok ? 'passed' : 'failed'} (${result.status})`, result.ok ? 'good' : 'bad');
+      } catch (error) {
+        outputEl.textContent = String(error);
+        setStatus(statusEl, 'HTML translation failed.', 'bad');
+      }
+    });
+  </script>
+</body>
+</html>
